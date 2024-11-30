@@ -1,4 +1,4 @@
-use aoc23::{run_day, set_verbosity, test_day, Part, Verbosity};
+use aoc24::{run_day, set_verbosity, test_day, Part, Verbosity};
 use clap::{App, AppSettings, Arg, SubCommand};
 use colored::*;
 use reqwest::blocking::Client;
