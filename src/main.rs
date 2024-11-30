@@ -17,9 +17,9 @@ use std::sync::Arc;
 // TODO: Rewrite CLI and update Clap
 
 fn main() {
-    let matches = App::new("Advent Of Code 2023")
+    let matches = App::new("Advent Of Code 2024")
         .author("LeMoonStar <webmaster@unitcore.de>")
-        .about("My Advent Of Code 2023 solutions.")
+        .about("My Advent Of Code 2024 solutions.")
         .setting(AppSettings::SubcommandRequiredElseHelp)
         .arg(
             Arg::with_name("day")
@@ -200,10 +200,10 @@ fn download_input(day: u8, session: &String) -> Result<String, reqwest::Error> {
         .build()?;
 
     let response = client
-        .get(format!("https://adventofcode.com/2023/day/{}/input", day))
+        .get(format!("https://adventofcode.com/2024/day/{}/input", day))
         .header(
             USER_AGENT,
-            "https://github.com/LeMoonStar/AoC23 aoc23@unitcore.de",
+            "https://github.com/LeMoonStar/AoC24 aoc24@unitcore.de",
         )
         .send()?;
 
@@ -215,7 +215,7 @@ fn download_input(day: u8, session: &String) -> Result<String, reqwest::Error> {
 }
 
 fn get_auto_input(day: u8, session: Option<&String>, cache: bool) -> String {
-    let cache_str = &format!("./.aoc23_cache/input{:02}.txt", day);
+    let cache_str = &format!("./.aoc24_cache/input{:02}.txt", day);
     let cache_path: &Path = Path::new(cache_str);
     match cache {
         true => match fs::read_to_string(cache_path) {
@@ -224,7 +224,7 @@ fn get_auto_input(day: u8, session: Option<&String>, cache: bool) -> String {
                 if let Some(session) = session {
                     match download_input(day, session) {
                         Ok(input) => {
-                            let _ = fs::create_dir(Path::new("./.aoc23_cache"));
+                            let _ = fs::create_dir(Path::new("./.aoc24_cache"));
                             match fs::write(cache_path, &input) {
                                 Ok(_) => {}
                                 Err(err) => {
