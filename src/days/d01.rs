@@ -44,8 +44,8 @@ impl DayImpl<Data> for Day<CURRENT_DAY> {
     }
 
     fn two(&self, data: &mut Data) -> Answer {
-        let mut left = data.iter().map(|v| v[0]).collect::<Vec<u64>>();
-        let mut right = data.iter().map(|v| v[1]).collect::<Vec<u64>>();
+        let left = data.iter().map(|v| v[0]).collect::<Vec<u64>>();
+        let right = data.iter().map(|v| v[1]).collect::<Vec<u64>>();
 
         Answer::Number(
             left.iter()

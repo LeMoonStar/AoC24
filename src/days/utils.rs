@@ -74,6 +74,7 @@ pub enum Direction {
     West,
 }
 
+#[allow(dead_code)]
 impl Direction {
     pub fn opposite(&self) -> Direction {
         match self {

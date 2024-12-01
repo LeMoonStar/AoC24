@@ -148,6 +148,7 @@ where
     }
 
     /// Compute both parts
+    #[allow(dead_code)]
     fn run(input: &str) -> (Answer, Answer)
     where
         Self: Sized,
@@ -157,6 +158,7 @@ where
     }
 
     /// Init and compute part 1
+    #[allow(dead_code)]
     fn run_one(input: &str) -> Answer
     where
         Self: Sized,
@@ -166,6 +168,7 @@ where
     }
 
     /// Init and compute part 1
+    #[allow(dead_code)]
     fn run_two(input: &str) -> Answer
     where
         Self: Sized,
