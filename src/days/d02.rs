@@ -11,59 +11,51 @@ pub enum Direction {
 pub struct Report(Vec<i8>);
 
 impl Report {
-    pub fn is_safe(&self, tolerance: usize) -> bool {
+    pub fn is_safe(&self, mut tolerance: usize) -> bool {
         let mut direction = None;
-        let mut failures = 0;
-        let mut skip_last = false;
+        let mut skip = false;
 
         for i in 1..self.0.len() {
-            match (
-                self.0[i]
-                    - self.0[i - if skip_last {
-                        skip_last = false;
-                        2
-                    } else {
-                        1
-                    }],
-                &direction,
-            ) {
-                /* Over limits */
-                (..=-4 | 4.., _) => {
-                    failures += 1;
-                    skip_last = true;
-                }
-
-                /* Decide on direction */
-                (..=-1, None) => direction = Some(Direction::Decreasing),
-                (1.., None) => direction = Some(Direction::Increasing),
-
-                /* Wrong Direction */
-                (1.., Some(Direction::Decreasing)) => {
-                    failures += 1;
-                    skip_last = true;
-                }
-                (..=-1, Some(Direction::Increasing)) => {
-                    failures += 1;
-                    skip_last = true;
-                }
-
-                /* No Change */
-                (0, _) => {
-                    failures += 1;
-                    skip_last = true;
-                }
-                _ => {}
+            if skip {
+                skip = false;
+                continue;
             }
 
-            if failures > tolerance {
+            if !Self::safe_comparison(self.0[i - 1], self.0[i], &mut direction) {
+                if tolerance > 0 && i > 1 {
+                    tolerance -= 1;
+                    if !Self::safe_comparison(self.0[i - 2], self.0[i], &mut direction) {
+                        skip = true;
+                        continue;
+                    }
+                }
+
                 return false;
             }
-
-            if skip_last {
-                println!("SKIPPING {}", i);
-            }
         }
+
         true
+    }
+
+    fn safe_comparison(a: i8, b: i8, direction: &mut Option<Direction>) -> bool {
+        match (b - a, &direction) {
+            /* Over limits */
+            (..=-4 | 4.., _) => return false,
+
+            /* Decide on direction */
+            (..=-1, None) => *direction = Some(Direction::Decreasing),
+            (1.., None) => *direction = Some(Direction::Increasing),
+
+            /* Wrong Direction */
+            (1.., Some(Direction::Decreasing)) => return false,
+            (..=-1, Some(Direction::Increasing)) => return false,
+
+            /* No Change */
+            (0, _) => return false,
+            _ => {}
+        }
+
+        return true;
     }
 }
 
@@ -95,7 +87,6 @@ impl DayImpl<Data> for Day<CURRENT_DAY> {
     fn one(&self, data: &mut Data) -> Answer {
         let mut safe_count = 0;
         for report in data {
-            println!("{:?}", report);
             if report.is_safe(0) {
                 safe_count += 1;
             }
@@ -107,9 +98,7 @@ impl DayImpl<Data> for Day<CURRENT_DAY> {
     fn two(&self, data: &mut Data) -> Answer {
         let mut safe_count = 0;
         for report in data {
-            println!("{:?}", report);
             if report.is_safe(1) {
-                println!("Safe!");
                 safe_count += 1;
             }
         }
