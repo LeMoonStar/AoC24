@@ -4,7 +4,7 @@
 [![Language: Rust](https://img.shields.io/badge/Language-Rust-orange.svg?style=flat-square)](https://en.wikipedia.org/wiki/Rust_(programming_language))
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](https://mit-license.org/)
 ![Days completed](https://img.shields.io/badge/Days%20completed-1-red?style=flat-square)
-![Stars](https://img.shields.io/badge/Stars-2-yellow?style=flat-square)
+![Stars](https://img.shields.io/badge/Stars-3-yellow?style=flat-square)
 
 > ⚠️ This README is copied from my previous years solution. It is not fully adopted to 2024 yet.
 
