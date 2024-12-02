@@ -11,8 +11,7 @@ pub enum Direction {
 pub struct Report(Vec<i8>);
 
 impl Report {
-    pub fn is_safe(&self, mut tolerance: usize) -> bool {
-        let mut direction = None;
+    pub fn is_safe(&self, mut direction: Option<Direction>, mut tolerance: usize) -> bool {
         let mut skip = false;
 
         for i in 1..self.0.len() {
@@ -22,9 +21,9 @@ impl Report {
             }
 
             if !Self::safe_comparison(self.0[i - 1], self.0[i], &mut direction) {
-                if tolerance > 0 && i > 1 {
+                if tolerance > 0 && i + 1 < self.0.len() {
                     tolerance -= 1;
-                    if !Self::safe_comparison(self.0[i - 2], self.0[i], &mut direction) {
+                    if !Self::safe_comparison(self.0[i - 1], self.0[i + 1], &mut direction) {
                         skip = true;
                         continue;
                     }
@@ -35,6 +34,15 @@ impl Report {
         }
 
         true
+    }
+
+    /**
+     * It is possible that the second number is out of place, causing the
+     * direction to be wrong.
+     */
+    pub fn is_safe_any_way(&self, tolerance: usize) -> bool {
+        return self.is_safe(Some(Direction::Decreasing), tolerance)
+            || self.is_safe(Some(Direction::Increasing), tolerance);
     }
 
     fn safe_comparison(a: i8, b: i8, direction: &mut Option<Direction>) -> bool {
@@ -87,7 +95,7 @@ impl DayImpl<Data> for Day<CURRENT_DAY> {
     fn one(&self, data: &mut Data) -> Answer {
         let mut safe_count = 0;
         for report in data {
-            if report.is_safe(0) {
+            if report.is_safe(None, 0) {
                 safe_count += 1;
             }
         }
@@ -98,7 +106,7 @@ impl DayImpl<Data> for Day<CURRENT_DAY> {
     fn two(&self, data: &mut Data) -> Answer {
         let mut safe_count = 0;
         for report in data {
-            if report.is_safe(1) {
+            if report.is_safe_any_way(1) {
                 safe_count += 1;
             }
         }
