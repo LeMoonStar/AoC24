@@ -21,7 +21,11 @@ impl Report {
             }
 
             if !Self::safe_comparison(self.0[i - 1], self.0[i], &mut direction) {
-                if tolerance > 0 && i + 1 < self.0.len() {
+                if tolerance > 0 {
+                    if (i + 1 >= self.0.len()) {
+                        return true;
+                    }
+
                     tolerance -= 1;
                     if !Self::safe_comparison(self.0[i - 1], self.0[i + 1], &mut direction) {
                         skip = true;
