@@ -11,7 +11,7 @@ pub struct Command {
 
 impl Command {
     pub fn run(&self) -> u64 {
-        if !self.command.ends_with("mul") || self.parameters.len() < 2 {
+        if self.command != "mul" || self.parameters.len() < 2 {
             return 0;
         }
         self.parameters[0] * self.parameters[1]
@@ -32,9 +32,9 @@ impl Program {
         self.0
             .iter()
             .map(|v| {
-                if v.command.ends_with("don't") {
+                if v.command == "don't" {
                     enabled = false;
-                } else if v.command.ends_with("do") {
+                } else if v.command == "do" {
                     enabled = true;
                 } else if enabled {
                     return v.run();
@@ -47,7 +47,7 @@ impl Program {
 
 impl From<&str> for Program {
     fn from(value: &str) -> Self {
-        let pattern: Regex = Regex::new(r"([a-z_']+)\(((?:\d+,?)*)\)").unwrap();
+        let pattern: Regex = Regex::new(r"(do|don't|mul)\(((?:\d+,?)*)\)").unwrap();
 
         let mut commands = vec![];
         for (_, [command, parameters]) in pattern.captures_iter(value).map(|c| c.extract()) {
