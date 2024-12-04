@@ -30,77 +30,100 @@ impl LetterWall {
         }
     }
 
-    fn is_upper_left_of_xmas(&self, x: usize, y: usize) -> Option<Direction> {
-        #[rustfmt::skip]
-        match(
-            self.at( x, y), self.at( x+1, y), self.at( x+2, y), self.at( x+3, y),
-            self.at( x, y+1), self.at( x+1, y+1), self.at( x+2, y+1), self.at( x+3, y+1),
-            self.at( x, y+2), self.at( x+1, y+2), self.at( x+2, y+2), self.at( x+3, y+2),
-            self.at( x, y+3), self.at( x+1, y+3), self.at( x+2, y+3), self.at( x+3, y+3)
-        ) {
-            (
-                Some('X'), Some('M'), Some('A'), Some('S'),
-                _, _, _, _,
-                _, _, _, _,
-                _, _, _, _
-            ) => Some(Direction::East),
-            (
-                Some('S'), Some('A'), Some('M'), Some('X'),
-                _, _, _, _,
-                _, _, _, _,
-                _, _, _, _
-            ) => Some(Direction::West),
-            (
-                Some('X'), _, _, _,
-                Some('M'), _, _, _,
-                Some('A'), _, _, _,
-                Some('S'), _, _, _
-            ) => Some(Direction::South),
-            (
-                Some('S'), _, _, _,
-                Some('A'), _, _, _,
-                Some('M'), _, _, _,
-                Some('X'), _, _, _
-            ) => Some(Direction::North),
-            (
-                Some('X'), _, _, _,
-                _, Some('M'), _, _,
-                _, _, Some('A'), _,
-                _, _, _, Some('S')
-            ) => Some(Direction::SouthEast),
-            (
-                Some('S'), _, _, _,
-                _, Some('A'), _, _,
-                _, _, Some('M'), _,
-                _, _, _, Some('X')
-            ) => Some(Direction::NorthWest),
-            (
-                _, _, _, Some('X'),
-                _, _, Some('M'), _,
-                _, Some('A'), _, _,
-                Some('S'), _, _, _
-            ) => Some(Direction::SouthWest),
-            (
-                _, _, _, Some('S'),
-                _, _, Some('A'), _,
-                _, Some('M'), _, _,
-                Some('X'), _, _, _
-            ) => Some(Direction::NorthEast),
-            _ => None
+    #[rustfmt::skip]
+    fn get_xmas_directions(&self, x: usize, y: usize) -> Vec<Direction> {
+        let mut directions = vec!();
+
+        let map = (
+            self.at(x, y), self.at(x+1, y), self.at(x+2, y), self.at(x+3, y),
+            self.at(x, y+1), self.at(x+1, y+1), self.at(x+2, y+1), self.at(x+3, y+1),
+            self.at(x, y+2), self.at(x+1, y+2), self.at(x+2, y+2), self.at(x+3, y+2),
+            self.at(x, y+3), self.at(x+1, y+3), self.at(x+2, y+3), self.at(x+3, y+3)
+        );
+        
+        if let (
+            Some(&'X'), Some(&'M'), Some(&'A'), Some(&'S'),
+            _, _, _, _,
+            _, _, _, _,
+            _, _, _, _
+        ) = map {
+            directions.push(Direction::East);
         }
+        
+        if let (
+            Some('S'), Some('A'), Some('M'), Some('X'),
+            _, _, _, _,
+            _, _, _, _,
+            _, _, _, _
+        ) = map {
+            directions.push(Direction::West);
+        }
+        
+        if let (
+            Some('X'), _, _, _,
+            Some('M'), _, _, _,
+            Some('A'), _, _, _,
+            Some('S'), _, _, _
+        ) = map {
+            directions.push(Direction::South);
+        }
+        
+        if let (
+            Some('S'), _, _, _,
+            Some('A'), _, _, _,
+            Some('M'), _, _, _,
+            Some('X'), _, _, _
+        ) = map {
+            directions.push(Direction::North);
+        }
+        
+        if let (
+            Some('X'), _, _, _,
+            _, Some('M'), _, _,
+            _, _, Some('A'), _,
+            _, _, _, Some('S')
+        ) = map {
+            directions.push(Direction::SouthEast);
+        }
+        
+        if let (
+            Some('S'), _, _, _,
+            _, Some('A'), _, _,
+            _, _, Some('M'), _,
+            _, _, _, Some('X')
+        ) = map {
+            directions.push(Direction::NorthWest);
+        }
+        
+        if let (
+            _, _, _, Some('X'),
+            _, _, Some('M'), _,
+            _, Some('A'), _, _,
+            Some('S'), _, _, _
+        ) = map {
+            directions.push(Direction::SouthWest);
+        }
+        
+        if let (
+            _, _, _, Some('S'),
+            _, _, Some('A'), _,
+            _, Some('M'), _, _,
+            Some('X'), _, _, _
+        ) = map {
+            directions.push(Direction::SouthEast);
+        }
+
+        directions
     }
 
     pub fn count_xmas(&self) -> u64 {
         let mut count = 0;
         for y in 0..self.0.len() {
             for x in 0..self.0[0].len() {
-                if let Some(_dir) = self.is_upper_left_of_xmas(x, y) {
-                    dprintln!("FOUND AT {} {} '{}' - DIR: {:?}", x, y, self.0[y][x], _dir);
-                    count += 1;
-                }
+                count += self.get_xmas_directions(x, y).len();
             }
         }
-        return count;
+        return count as u64;
     }
 }
 
