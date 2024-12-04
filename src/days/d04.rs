@@ -1,20 +1,6 @@
-use crate::dprintln;
-
 use super::{Answer, Day, DayImpl};
 
 const CURRENT_DAY: u8 = 4;
-
-#[derive(Debug, Clone, Copy)]
-enum Direction {
-    East,
-    West,
-    North,
-    South,
-    NorthEast,
-    NorthWest,
-    SouthEast,
-    SouthWest,
-}
 
 #[derive(Debug, Clone)]
 pub struct LetterWall(Vec<Vec<char>>);
@@ -31,8 +17,8 @@ impl LetterWall {
     }
 
     #[rustfmt::skip]
-    fn get_xmas_directions(&self, x: usize, y: usize) -> Vec<Direction> {
-        let mut directions = vec!();
+    fn get_xmas_direction_count(&self, x: usize, y: usize) -> u64 {
+        let mut directions = 0;
 
         let map = (
             self.at(x, y), self.at(x+1, y), self.at(x+2, y), self.at(x+3, y),
@@ -47,7 +33,7 @@ impl LetterWall {
             _, _, _, _,
             _, _, _, _
         ) = map {
-            directions.push(Direction::East);
+            directions += 1;
         }
         
         if let (
@@ -56,7 +42,7 @@ impl LetterWall {
             _, _, _, _,
             _, _, _, _
         ) = map {
-            directions.push(Direction::West);
+            directions += 1;
         }
         
         if let (
@@ -65,7 +51,7 @@ impl LetterWall {
             Some('A'), _, _, _,
             Some('S'), _, _, _
         ) = map {
-            directions.push(Direction::South);
+            directions += 1;
         }
         
         if let (
@@ -74,7 +60,7 @@ impl LetterWall {
             Some('M'), _, _, _,
             Some('X'), _, _, _
         ) = map {
-            directions.push(Direction::North);
+            directions += 1;
         }
         
         if let (
@@ -83,7 +69,7 @@ impl LetterWall {
             _, _, Some('A'), _,
             _, _, _, Some('S')
         ) = map {
-            directions.push(Direction::SouthEast);
+            directions += 1;
         }
         
         if let (
@@ -92,7 +78,7 @@ impl LetterWall {
             _, _, Some('M'), _,
             _, _, _, Some('X')
         ) = map {
-            directions.push(Direction::NorthWest);
+            directions += 1;
         }
         
         if let (
@@ -101,7 +87,7 @@ impl LetterWall {
             _, Some('A'), _, _,
             Some('S'), _, _, _
         ) = map {
-            directions.push(Direction::SouthWest);
+            directions += 1;
         }
         
         if let (
@@ -110,7 +96,7 @@ impl LetterWall {
             _, Some('M'), _, _,
             Some('X'), _, _, _
         ) = map {
-            directions.push(Direction::SouthEast);
+            directions += 1;
         }
 
         directions
@@ -124,24 +110,24 @@ impl LetterWall {
             self.at( x, y+2), self.at( x+1, y+2), self.at( x+2, y+2)
         ) {
             (
-                Some('M'), _,Some('S'),
-                _, Some('A'), _,
-                Some('M'), _, Some('S'),
+                Some('M'), _,         Some('S'),
+                _,         Some('A'), _,
+                Some('M'), _,         Some('S'),
             ) => true,
             (
-                Some('S'), _,Some('S'),
-                _, Some('A'), _,
-                Some('M'), _, Some('M'),
+                Some('S'), _,         Some('S'),
+                _,         Some('A'), _,
+                Some('M'), _,         Some('M'),
             ) => true,
             (
-                Some('M'), _,Some('M'),
-                _, Some('A'), _,
-                Some('S'), _, Some('S'),
+                Some('M'), _,         Some('M'),
+                _,         Some('A'), _,
+                Some('S'), _,         Some('S'),
             ) => true,
             (
-                Some('S'), _,Some('M'),
-                _, Some('A'), _,
-                Some('S'), _, Some('M'),
+                Some('S'), _,         Some('M'),
+                _,         Some('A'), _,
+                Some('S'), _,         Some('M'),
             ) => true,
             _ => false
         }
@@ -152,7 +138,7 @@ impl LetterWall {
         let mut count = 0;
         for y in 0..self.0.len() {
             for x in 0..self.0[0].len() {
-                count += self.get_xmas_directions(x, y).len();
+                count += self.get_xmas_direction_count(x, y);
             }
         }
         return count as u64;
