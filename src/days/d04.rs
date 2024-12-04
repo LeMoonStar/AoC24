@@ -4,7 +4,7 @@ use super::{Answer, Day, DayImpl};
 
 const CURRENT_DAY: u8 = 4;
 
-#[derive(Debug, Clone,Copy)]
+#[derive(Debug, Clone, Copy)]
 enum Direction {
     East,
     West,
@@ -13,11 +13,11 @@ enum Direction {
     NorthEast,
     NorthWest,
     SouthEast,
-    SouthWest
+    SouthWest,
 }
 
 #[derive(Debug, Clone)]
-pub struct LetterWall (Vec<Vec<char>>);
+pub struct LetterWall(Vec<Vec<char>>);
 
 impl LetterWall {
     fn at(&self, x: usize, y: usize) -> Option<&char> {
@@ -31,6 +31,7 @@ impl LetterWall {
     }
 
     fn is_upper_left_of_xmas(&self, x: usize, y: usize) -> Option<Direction> {
+        #[rustfmt::skip]
         match(
             self.at( x, y), self.at( x+1, y), self.at( x+2, y), self.at( x+3, y),
             self.at( x, y+1), self.at( x+1, y+1), self.at( x+2, y+1), self.at( x+3, y+1),
@@ -91,7 +92,7 @@ impl LetterWall {
 
     pub fn count_xmas(&self) -> u64 {
         let mut count = 0;
-        for y in 0..self.0.len(){
+        for y in 0..self.0.len() {
             for x in 0..self.0[0].len() {
                 if let Some(_dir) = self.is_upper_left_of_xmas(x, y) {
                     dprintln!("FOUND AT {} {} '{}' - DIR: {:?}", x, y, self.0[y][x], _dir);
@@ -105,12 +106,7 @@ impl LetterWall {
 
 impl From<&str> for LetterWall {
     fn from(value: &str) -> Self {
-        Self (
-            value
-                .lines()
-                .map(|v| v.chars().collect())
-                .collect()
-        )
+        Self(value.lines().map(|v| v.chars().collect()).collect())
     }
 }
 
@@ -126,10 +122,7 @@ impl DayImpl<Data> for Day<CURRENT_DAY> {
     }
 
     fn init(input: &str) -> (Self, Data) {
-        (
-            Self {},
-            input.into(),
-        )
+        (Self {}, input.into())
     }
 
     fn one(&self, data: &mut Data) -> Answer {
