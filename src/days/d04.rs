@@ -1,3 +1,5 @@
+use crate::dprintln;
+
 use super::{Answer, Day, DayImpl};
 
 const CURRENT_DAY: u8 = 4;
@@ -28,7 +30,7 @@ impl LetterWall {
         }
     }
 
-    pub fn is_upper_left_of_xmas(&self, x: usize, y: usize) -> Option<Direction> {
+    fn is_upper_left_of_xmas(&self, x: usize, y: usize) -> Option<Direction> {
         match(
             self.at( x, y), self.at( x+1, y), self.at( x+2, y), self.at( x+3, y),
             self.at( x, y+1), self.at( x+1, y+1), self.at( x+2, y+1), self.at( x+3, y+1),
@@ -82,7 +84,7 @@ impl LetterWall {
                 _, _, Some('A'), _,
                 _, Some('M'), _, _,
                 Some('X'), _, _, _
-            ) => Some(Direction::SouthWest),
+            ) => Some(Direction::NorthEast),
             _ => None
         }
     }
@@ -91,8 +93,8 @@ impl LetterWall {
         let mut count = 0;
         for y in 0..self.0.len(){
             for x in 0..self.0[0].len() {
-                if let Some(dir) = self.is_upper_left_of_xmas(x, y) {
-                    println!("FOUND AT {} {} '{}' - DIR: {:?}", x, y, self.0[y][x], dir);
+                if let Some(_dir) = self.is_upper_left_of_xmas(x, y) {
+                    dprintln!("FOUND AT {} {} '{}' - DIR: {:?}", x, y, self.0[y][x], _dir);
                     count += 1;
                 }
             }
