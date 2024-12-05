@@ -28,7 +28,7 @@ pub struct UpdateSequence(Vec<u64>);
 
 impl UpdateSequence {
     fn matches_rules(&self, rules: &Vec<PageOrderingRule>) -> bool {
-        let mut contained: BTreeSet<u64> = self.0.iter().map(|v| *v).collect();
+        let contained: BTreeSet<u64> = self.0.iter().map(|v| *v).collect();
         let mut seen = BTreeSet::new();
 
         for page_number in &self.0 {
@@ -39,7 +39,6 @@ impl UpdateSequence {
                         && !seen.contains(&v.first)
                         && contained.contains(&v.first)
                 })
-                .inspect(|v| println!("{:?}", v))
                 .count()
                 > 0
             {
@@ -53,6 +52,42 @@ impl UpdateSequence {
 
     fn get_middle_page_number(&self) -> u64 {
         self.0[self.0.len() / 2]
+    }
+
+    fn get_rule_conforming(&self, rules: &Vec<PageOrderingRule>) -> Self {
+        let mut sorted: Vec<u64> = Vec::with_capacity(self.0.len());
+        let contained: BTreeSet<u64> = self.0.iter().map(|v| *v).collect();
+
+        let mut numbers_with_edges = self
+            .0
+            .iter()
+            .map(|v| {
+                (
+                    *v,
+                    rules
+                        .iter()
+                        .filter(|r| r.second == *v)
+                        .filter(|r| contained.contains(&r.first))
+                        .map(|r| r.first)
+                        .collect::<Vec<u64>>(),
+                )
+            })
+            .collect::<Vec<(u64, Vec<u64>)>>();
+
+        numbers_with_edges.sort_by(|a, b| a.1.len().cmp(&b.1.len()));
+        for (number, edges) in numbers_with_edges {
+            for edge in edges {
+                if !sorted.contains(&edge) {
+                    sorted.push(edge);
+                }
+            }
+
+            if !sorted.contains(&number) {
+                sorted.push(number);
+            }
+        }
+
+        Self(sorted)
     }
 }
 
@@ -86,7 +121,7 @@ impl DayImpl<Data> for Day<CURRENT_DAY> {
     }
 
     fn expected_results() -> (Answer, Answer) {
-        (Answer::Number(143), Answer::Number(0))
+        (Answer::Number(143), Answer::Number(123))
     }
 
     fn init(input: &str) -> (Self, Data) {
@@ -104,6 +139,13 @@ impl DayImpl<Data> for Day<CURRENT_DAY> {
     }
 
     fn two(&self, data: &mut Data) -> Answer {
-        Answer::Number(0)
+        data.updates[0].get_rule_conforming(&data.rules);
+        Answer::Number(
+            data.updates
+                .iter()
+                .filter(|v| !v.matches_rules(&data.rules))
+                .map(|v| v.get_rule_conforming(&data.rules).get_middle_page_number())
+                .sum(),
+        )
     }
 }
