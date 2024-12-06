@@ -1,9 +1,13 @@
 use super::{Answer, Day, DayImpl};
-use std::{collections::HashSet, hash::Hash, path::Iter};
+use std::{
+    collections::{HashMap, HashSet},
+    hash::Hash,
+    path::Iter,
+};
 
 const CURRENT_DAY: u8 = 6;
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Hash, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Direction {
     North,
     East,
@@ -83,6 +87,21 @@ pub struct PatrolPathIterator<'a> {
     map: &'a PatrollingMap,
 }
 
+impl<'a> PatrolPathIterator<'a> {
+    fn is_loop(&mut self) -> bool {
+        let mut visited = HashSet::new();
+
+        for current in self {
+            if visited.contains(&current) {
+                return true;
+            }
+            visited.insert(current);
+        }
+
+        false
+    }
+}
+
 impl<'a> Iterator for PatrolPathIterator<'a> {
     type Item = (Position, Direction);
 
@@ -122,6 +141,10 @@ impl PatrollingMap {
 
     pub fn is_obstacle(&self, pos: Position) -> bool {
         self.obstacles.contains(&pos)
+    }
+
+    pub fn add_obstruction(&mut self, pos: Position) {
+        self.obstacles.insert(pos);
     }
 
     pub fn iter(&self) -> PatrolPathIterator {
@@ -193,7 +216,7 @@ impl DayImpl<Data> for Day<CURRENT_DAY> {
     }
 
     fn expected_results() -> (Answer, Answer) {
-        (Answer::Number(41), Answer::Number(0))
+        (Answer::Number(41), Answer::Number(6))
     }
 
     fn init(input: &str) -> (Self, Data) {
@@ -201,7 +224,6 @@ impl DayImpl<Data> for Day<CURRENT_DAY> {
     }
 
     fn one(&self, data: &mut Data) -> Answer {
-        println!("{:?}", data);
         let visited: HashSet<Position> = data
             .iter()
             //.inspect(|v| println!("{:?}", v))
@@ -211,6 +233,23 @@ impl DayImpl<Data> for Day<CURRENT_DAY> {
     }
 
     fn two(&self, data: &mut Data) -> Answer {
-        Answer::Number(0)
+        let main_path_visited: HashSet<Position> = data
+            .iter()
+            //.inspect(|v| println!("{:?}", v))
+            .map(|v| v.0)
+            .collect();
+
+
+        // NOTE: More than 1812
+        Answer::Number(
+            main_path_visited
+                .iter()
+                .filter(|pos| {
+                    let mut map = data.clone();
+                    map.add_obstruction(**pos);
+                    map.iter().is_loop()
+                })
+                .count() as u64
+        )
     }
 }
