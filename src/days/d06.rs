@@ -1,9 +1,5 @@
 use super::{Answer, Day, DayImpl};
-use std::{
-    collections::{HashMap, HashSet},
-    hash::Hash,
-    path::Iter,
-};
+use std::{collections::HashSet, hash::Hash};
 
 const CURRENT_DAY: u8 = 6;
 
@@ -133,12 +129,6 @@ pub struct PatrollingMap {
 }
 
 impl PatrollingMap {
-    pub fn get_visiting_positions(&self) -> HashSet<Position> {
-        let mut visited = HashSet::new();
-
-        visited
-    }
-
     pub fn is_obstacle(&self, pos: Position) -> bool {
         self.obstacles.contains(&pos)
     }
@@ -239,7 +229,6 @@ impl DayImpl<Data> for Day<CURRENT_DAY> {
             .map(|v| v.0)
             .collect();
 
-
         // NOTE: More than 1812
         Answer::Number(
             main_path_visited
@@ -249,7 +238,7 @@ impl DayImpl<Data> for Day<CURRENT_DAY> {
                     map.add_obstruction(**pos);
                     map.iter().is_loop()
                 })
-                .count() as u64
+                .count() as u64,
         )
     }
 }
