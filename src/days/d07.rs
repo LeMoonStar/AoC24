@@ -10,11 +10,25 @@ enum Operator {
 }
 
 impl Operator {
+    #[inline(always)]
+    fn num_digits(mut n: u64) -> u32 {
+        if n == 0 {
+            return 1;
+        }
+        let mut count = 0;
+        while n > 0 {
+            n /= 10;
+            count += 1;
+        }
+        count
+    }
+
+    #[inline(always)]
     fn calculate(&self, a: u64, b: u64) -> u64 {
         match self {
             Operator::Multiply => a * b,
             Operator::Add => a + b,
-            Operator::Concat => format!("{}{}", a, b).parse().unwrap(),
+            Operator::Concat => a * 10_u64.pow(Self::num_digits(b)) + b,
         }
     }
 }
