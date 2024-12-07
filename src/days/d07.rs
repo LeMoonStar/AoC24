@@ -6,6 +6,7 @@ const CURRENT_DAY: u8 = 7;
 enum Operator {
     Add,
     Multiply,
+    Concat,
 }
 
 impl Operator {
@@ -13,6 +14,7 @@ impl Operator {
         match self {
             Operator::Multiply => a * b,
             Operator::Add => a + b,
+            Operator::Concat => format!("{}{}", a, b).parse().unwrap(),
         }
     }
 }
@@ -84,14 +86,11 @@ impl CalibrationEquation {
         value
     }
 
-    fn can_be_valid(&self) -> bool {
-        CombinationIterator::new(
-            &[Operator::Add, Operator::Multiply],
-            (self.parts.len() - 1) as u32,
-        )
-        .map(|o| self.calculate(o))
-        .collect::<Vec<_>>()
-        .contains(&self.result)
+    fn can_be_valid(&self, operations: &[Operator]) -> bool {
+        CombinationIterator::new(operations, (self.parts.len() - 1) as u32)
+            .map(|o| self.calculate(o))
+            .collect::<Vec<_>>()
+            .contains(&self.result)
     }
 }
 
@@ -116,10 +115,10 @@ pub struct Calibrator {
 }
 
 impl Calibrator {
-    pub fn get_valid_sum(&self) -> u64 {
+    fn get_valid_sum(&self, operators: &[Operator]) -> u64 {
         self.equations
             .iter()
-            .filter(|v| v.can_be_valid())
+            .filter(|v| v.can_be_valid(operators))
             .map(|v| v.result)
             .sum()
     }
@@ -140,7 +139,7 @@ impl DayImpl<Data> for Day<CURRENT_DAY> {
     }
 
     fn expected_results() -> (Answer, Answer) {
-        (Answer::Number(3749), Answer::Number(0))
+        (Answer::Number(3749), Answer::Number(11387))
     }
 
     fn init(input: &str) -> (Self, Data) {
@@ -148,10 +147,10 @@ impl DayImpl<Data> for Day<CURRENT_DAY> {
     }
 
     fn one(&self, data: &mut Data) -> Answer {
-        Answer::Number(data.get_valid_sum())
+        Answer::Number(data.get_valid_sum(&[Operator::Add, Operator::Multiply]))
     }
 
     fn two(&self, data: &mut Data) -> Answer {
-        Answer::Number(0)
+        Answer::Number(data.get_valid_sum(&[Operator::Add, Operator::Multiply, Operator::Concat]))
     }
 }
